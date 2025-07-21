@@ -39,7 +39,7 @@ $checkoutData = [
     'currency' => 'GEL',
     'amount' => 1000
 ];
-$data = \Flitt\Checkout::url($data);
+$data = \Flitt\Checkout::url($checkoutData);
 $url = $data->getUrl();
 //$data->toCheckout() - redirect to checkout
 ```
