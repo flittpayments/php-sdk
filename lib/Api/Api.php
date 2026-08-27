@@ -86,9 +86,6 @@ class Api
         if (!isset($data['signature']))
             $data['signature'] = Helper\ApiHelper::generateSignature($data, $this->secretKey, $this->version);
         switch ($this->requestType) {
-            case 'xml':
-                $convertedData = Helper\ApiHelper::toXML(['request' => $data]);
-                break;
             case 'form':
                 $convertedData = Helper\ApiHelper::toFormData($data);
                 break;

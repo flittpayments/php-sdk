@@ -81,6 +81,16 @@ class CheckoutTest extends TestCase
     /**
      * @throws Exception\ApiException
      */
+    public function testButton()
+    {
+        $this->setTestConfig();
+        $result = Checkout::button($this->fullTestData);
+        $this->assertIsMyString($result, "Got a " . gettype($result) . " instead of a string");
+    }
+
+    /**
+     * @throws Exception\ApiException
+     */
     public function testDeeplinkOpenBanking()
     {
         $this->setTestConfig();

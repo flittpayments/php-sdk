@@ -28,7 +28,7 @@ class PaymentTest extends TestCase
     ];
     private $TestPcidssData = [
         'currency' => 'GEL',
-        'amount' => 1,
+        'amount' => 1000,
         'client_ip' => '127.2.2.1'
     ];
 

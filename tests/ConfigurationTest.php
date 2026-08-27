@@ -63,8 +63,8 @@ class ConfigurationTest extends TestCase
 
     public function testSetMerchantId()
     {
-        Configuration::setMerchantId(123);
-        $this->assertEquals(123, Configuration::getMerchantId());
+        Configuration::setMerchantId(1549901);
+        $this->assertEquals(1549901, Configuration::getMerchantId());
     }
 
     public function testSetCreditKey()

@@ -19,6 +19,9 @@ class IbanCreditTest extends TestCase
         'receiver_iban' => 'GE00TB0000000000000003'
     ];
 
+    // Deliberately blank - proves IbanCredit::credit() signs/authenticates with
+    // the credit key, not the purchase secret key (see testCredit() and
+    // testCreditRequiresCorrectCreditKey() below).
     private function setTestConfig()
     {
         Configuration::setMerchantId($this->mid);
@@ -28,6 +31,9 @@ class IbanCreditTest extends TestCase
     }
 
     /**
+     * Succeeds with the purchase secret key blanked out, using only the credit
+     * key - confirms IbanCredit::credit() authenticates as a credit/payout
+     * operation, not a purchase.
      * @throws Exception\ApiException
      */
     public function testCredit()
@@ -38,6 +44,26 @@ class IbanCreditTest extends TestCase
             $result = IbanCredit::credit($this->TestData);
             $this->validateResult($result->getData());
             $this->isValid($result->isValid());
+        }
+    }
+
+    /**
+     * Conversely, a wrong credit key must fail signature validation - proves
+     * the credit key's value, not just its presence, actually drives the
+     * request signature.
+     */
+    public function testCreditRequiresCorrectCreditKey()
+    {
+        Configuration::setMerchantId($this->mid);
+        Configuration::setSecretKey('');
+        Configuration::setCreditKey('wrong_credit_key');
+        Configuration::setApiVersion('1.0');
+        Configuration::setRequestType('json');
+        try {
+            IbanCredit::credit($this->TestData);
+            $this->fail('Expected an ApiException for an invalid credit key');
+        } catch (Exception\ApiException $e) {
+            $this->assertNotFalse(strpos($e->getMessage(), 'Invalid signature'), $e->getMessage());
         }
     }
 

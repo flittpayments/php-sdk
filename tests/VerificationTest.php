@@ -40,4 +40,14 @@ class VerificationTest extends TestCase
         $this->assertNotEmpty($result['payment_id'], 'payment_id is empty');
         $this->assertEquals($result['response_status'], 'success');
     }
+
+    /**
+     * @throws Exception\ApiException
+     */
+    public function testVerificationForm()
+    {
+        $this->setTestConfig();
+        $result = Verification::form($this->minTestData);
+        $this->assertTrue(is_string($result), "Got a " . gettype($result) . " instead of a string");
+    }
 }

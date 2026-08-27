@@ -88,4 +88,26 @@ class PcidssTest extends TestCase
         $this->assertNotEmpty($result['order_status'], 'order_status is empty');
         $this->assertEquals($result['response_status'], 'success');
     }
+
+    /**
+     * Completing 3DS step two for real requires a real browser session at the
+     * ACS URL, which can't be automated here. This confirms the request wiring
+     * for Pcidss::submit() is correct by asserting the deterministic error the
+     * sandbox returns for an order that was never taken through step one.
+     * @throws Exception\ApiException
+     */
+    public function testSubmitOrderNotFound()
+    {
+        $this->setTestConfig();
+        try {
+            Pcidss::submit([
+                'order_id' => 'nonexistent_order_' . time(),
+                'pares' => 'fake_pares_value',
+                'md' => 'fake_md_value'
+            ]);
+            $this->fail('Expected an ApiException for a nonexistent order');
+        } catch (Exception\ApiException $e) {
+            $this->assertNotFalse(strpos($e->getMessage(), 'Order not found'), $e->getMessage());
+        }
+    }
 }

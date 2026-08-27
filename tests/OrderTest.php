@@ -109,6 +109,28 @@ class OrderTest extends TestCase
     }
 
     /**
+     * Order::atolLogs() and Order::settlement() could not be verified end-to-end
+     * against the live sandbox: atolLogs returns HTTP 404 (the /get_atol_logs/
+     * route appears to no longer exist), and settlement is rejected with
+     * "Parameter `order_type` is missing" even though the SDK does send it -
+     * likely the test merchant isn't provisioned for either. These tests cover
+     * the client-side required-param validation, which is verifiable offline.
+     */
+    public function testAtolLogsRequiresOrderId()
+    {
+        $this->setTestConfig();
+        $this->expectException(\InvalidArgumentException::class);
+        Order::atolLogs([]);
+    }
+
+    public function testSettlementRequiresOperationId()
+    {
+        $this->setTestConfig();
+        $this->expectException(\InvalidArgumentException::class);
+        Order::settlement([]);
+    }
+
+    /**
      * @param $array
      * @param $message
      */

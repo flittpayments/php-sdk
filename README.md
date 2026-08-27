@@ -29,6 +29,10 @@ git clone -b master https://github.com/flittpayments/php-sdk.git
 <?php
 require '/path-to-sdk/autoload.php';
 ```
+
+> **Version 2.0** removed legacy XML content-type support - only `json` and `form`
+> request types are supported now. See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## Simple Start
 ```php
 require 'vendor/autoload.php';
@@ -39,10 +43,46 @@ $checkoutData = [
     'currency' => 'GEL',
     'amount' => 1000
 ];
-$data = \Flitt\Checkout::url($data);
+$data = \Flitt\Checkout::url($checkoutData);
 $url = $data->getUrl();
 //$data->toCheckout() - redirect to checkout
 ```
+
+## Get order status
+```php
+$orderData = \Flitt\Order::status(['order_id' => $order_id]);
+$order = $orderData->getData();
+echo $order['order_status']; // e.g. 'approved', 'declined', 'processing'
+$orderData->isValid();       // verifies the response signature
+```
+See [examples/Order/status.php](examples/Order/status.php) for a full example, and
+[docs.flitt.com/api/status](https://docs.flitt.com/api/status/) for the API reference.
+
+## IBAN withdrawal
+```php
+\Flitt\Configuration::setCreditKey('testcredit'); // payout requests use the credit key, not the secret key
+$data = \Flitt\IbanCredit::credit([
+    'currency' => 'GEL',
+    'amount' => 1000,
+    'receiver_iban' => 'GE00TB0000000000000003'
+]);
+```
+See [examples/IbanCredit/credit.php](examples/IbanCredit/credit.php) and
+[docs.flitt.com/api/create-order-ibancredit](https://docs.flitt.com/api/create-order-ibancredit/).
+
+## Open Banking / Installments deeplinks
+```php
+$data = \Flitt\Checkout::deeplink([
+    'currency' => 'GEL',
+    'amount' => 1000,
+    'payment_systems' => 'opb',      // or 'installments'
+    'payment_method' => 'tbc'        // a single bank; 'x' is the sandbox Demo Bank
+]);
+$deeplinkUrl = $data->getUrl();
+```
+See [examples/Checkout/deeplink.php](examples/Checkout/deeplink.php) and
+[docs.flitt.com/api/bank-app-deeplinks](https://docs.flitt.com/api/bank-app-deeplinks/).
+
 # Api
 
 See [php-docs](https://flittpayments.github.io/php-docs/)
