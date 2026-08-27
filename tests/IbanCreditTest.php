@@ -4,15 +4,19 @@ namespace Flitt;
 
 use PHPUnit\Framework\TestCase;
 
-class P2pcreditTest extends TestCase
+class IbanCreditTest extends TestCase
 {
     private $mid = 1549901;
     private $CreditKey = 'testcredit';
     private $request_types = ['json', 'form'];
+    // Test IBAN from https://docs.flitt.com/api/testing/ (status: processing). Of the
+    // three published there, only this one satisfies the real ISO 7064 MOD-97 checksum
+    // validated client-side (see ValidationHelper::validateIban()) - GE00TB...0001
+    // (approved) and GE00TB...0002 (declined) do not, so they can't be used here.
     private $TestData = [
         'currency' => 'GEL',
-        'amount' => 111,
-        'receiver_card_number' => '4444555511116666'
+        'amount' => 1000,
+        'receiver_iban' => 'GE00TB0000000000000003'
     ];
 
     private function setTestConfig()
@@ -31,10 +35,25 @@ class P2pcreditTest extends TestCase
         $this->setTestConfig();
         foreach ($this->request_types as $type) {
             Configuration::setRequestType($type);
-            $result = P2pcredit::start($this->TestData);
+            $result = IbanCredit::credit($this->TestData);
             $this->validateResult($result->getData());
             $this->isValid($result->isValid());
         }
+    }
+
+    /**
+     * An invalid receiver_iban must be rejected client-side before any network call
+     */
+    public function testCreditRejectsInvalidIban()
+    {
+        $this->setTestConfig();
+        Configuration::setRequestType('json');
+        $this->expectException(\InvalidArgumentException::class);
+        IbanCredit::credit([
+            'currency' => 'GEL',
+            'amount' => 1000,
+            'receiver_iban' => 'NOT-AN-IBAN'
+        ]);
     }
 
     private function validateResult($result)

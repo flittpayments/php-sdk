@@ -41,11 +41,7 @@ class HttpGuzzle implements ClientInterface
         $data = [
             'body' => $params,
             'headers' => $guzzleHeaders,
-            'config' => [
-                'curl' => [
-                    $this->curlOptions,
-                ]
-            ]
+            'curl' => $this->curlOptions,
         ];
         $request = $client->$method($url, $data);
         $response = $request->getBody()->getContents();

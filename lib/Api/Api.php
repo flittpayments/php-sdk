@@ -6,6 +6,13 @@ use Flitt\Configuration;
 use Flitt\Exception\ApiException;
 use Flitt\Helper as Helper;
 
+/**
+ * Base class for all API request classes. Subclasses each declare their own
+ * $url/$requiredParams and merge any caller-supplied $requiredParams into that
+ * instance property on every get() call without resetting it - construct a fresh
+ * instance per request rather than reusing one across multiple get() calls with
+ * different $requiredParams overrides, or the merges will accumulate.
+ */
 class Api
 {
     /**
