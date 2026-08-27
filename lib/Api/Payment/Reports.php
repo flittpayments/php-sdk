@@ -2,45 +2,74 @@
 
 namespace Flitt\Api\Payment;
 
-use Flitt\Api\Api;
+use Flitt\Configuration;
+use Flitt\Helper\ApiHelper;
+use Flitt\Helper\ResponseHelper;
+use Flitt\Helper\ValidationHelper;
+use Flitt\Exception\ApiException;
 
-class Reports extends Api
+/**
+ * Payment reports (portal.flitt.com). Requires a merchant-specific
+ * application_id/application key configured via
+ * Configuration::setReportsApplicationId()/setReportsApplicationKey() -
+ * contact Flitt support to obtain them. These aren't part of the shared
+ * sandbox test credentials used elsewhere in this SDK, so this endpoint
+ * can't be covered by this SDK's own automated tests; see
+ * examples/Payment/reports.php.
+ * @see https://docs.flitt.com/api/reports/
+ */
+class Reports
 {
-    private $url = '/reports/';
+    private $url = '/api/extend/company/report/';
     /**
-     * Minimal required params to get reports
+     * Minimal required params to get a report
      * @var array
      */
     private $requiredParams = [
         'merchant_id' => 'integer',
-        'date_from' => 'date',
-        'date_to' => 'date',
+        'report_id' => 'integer',
+        'on_page' => 'integer',
+        'page' => 'integer'
     ];
 
     /**
-     * @param $data
-     * @param array $headers
+     * @param $data must include 'filters' (array), plus the required params
+     * above - see https://docs.flitt.com/api/reports/ for report_id values,
+     * their mandatory filter fields, and the filter object shape ({s, m, v}).
      * @return mixed
-     * @throws \Flitt\Exception\ApiException
+     * @throws ApiException
      */
-    public function get($data, $headers = [])
+    public function get($data)
     {
-        $requestData = $this->prepareParams($data);
-        $this->validate($requestData, $this->requiredParams, $dateFormat = 'd.m.Y H:i:s');
-        return $this->Request($method = 'POST', $this->url, $headers, $requestData);
-    }
-
-    /**
-     * @param $params
-     * @return mixed
-     */
-    protected function prepareParams($params)
-    {
-        $prepared_params = $params;
-
-        if (!isset($prepared_params['merchant_id'])) {
-            $prepared_params['merchant_id'] = $this->mid;
+        if (!isset($data['merchant_id'])) {
+            $data['merchant_id'] = Configuration::getMerchantId();
         }
-        return $prepared_params;
+        if (!isset($data['filters'])) {
+            $data['filters'] = [];
+        }
+        ValidationHelper::validateRequiredParams($data, $this->requiredParams);
+
+        $token = new ReportsToken();
+        $accessToken = $token->get()['token'];
+
+        $headers = [
+            'Content-Type: application/json; charset=utf-8',
+            'Authorization: Token ' . $accessToken
+        ];
+        $response = Configuration::getHttpClient()->request(
+            'POST',
+            Configuration::getReportsApiUrl() . $this->url,
+            $headers,
+            ApiHelper::toJSON($data)
+        );
+        if (!$response) {
+            throw new ApiException('Unknown error.');
+        }
+        $result = ResponseHelper::jsonToArray($response);
+        if (isset($result['error']) || isset($result['err_code'])) {
+            $message = isset($result['error']) ? $result['error'] : 'Request is incorrect.';
+            throw new ApiException($message, 200, ['response' => $result]);
+        }
+        return $result;
     }
 }

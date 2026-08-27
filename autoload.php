@@ -19,12 +19,11 @@ require(dirname(__FILE__) . '/lib/Api/Checkout/Token.php');
 require(dirname(__FILE__) . '/lib/Api/Checkout/Form.php');
 require(dirname(__FILE__) . '/lib/Api/Checkout/Verification.php');
 require(dirname(__FILE__) . '/lib/Api/Checkout/Deeplink.php');
-require(dirname(__FILE__) . '/lib/Api/Order/Atol.php');
+require(dirname(__FILE__) . '/lib/Api/Order/FiscalData.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Capture.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Reverse.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Settlements.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Status.php');
-require(dirname(__FILE__) . '/lib/Api/Order/TransactionList.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Subscription.php');
 require(dirname(__FILE__) . '/lib/Api/P2pcredit/Credit.php');
 require(dirname(__FILE__) . '/lib/Api/IbanCredit/Credit.php');
@@ -32,6 +31,7 @@ require(dirname(__FILE__) . '/lib/Api/Payment/Pcidss/StepOne.php');
 require(dirname(__FILE__) . '/lib/Api/Payment/Pcidss/StepTwo.php');
 require(dirname(__FILE__) . '/lib/Api/Payment/Rectoken.php');
 require(dirname(__FILE__) . '/lib/Api/Payment/Reports.php');
+require(dirname(__FILE__) . '/lib/Api/Payment/ReportsToken.php');
 
 /** Exceptions classes */
 require(dirname(__FILE__) . '/lib/Exception/MainException.php');

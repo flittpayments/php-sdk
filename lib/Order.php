@@ -50,29 +50,16 @@ class Order
     }
 
     /**
-     * Generate request to get transaction list of order
+     * Generate request to get fiscal receipt data for an order
+     * @see https://docs.flitt.com/api/fiscal_data/
      * @param $data
      * @param array $headers
      * @return OrderResponse
      * @throws Exception\ApiException
      */
-    public static function transactionList($data, $headers = [])
+    public static function fiscalData($data, $headers = [])
     {
-        $api = new Api\TransactionList();
-        $result = $api->get($data, $headers);
-        return new OrderResponse($result);
-    }
-
-    /**
-     * Generate request to get transaction list of order
-     * @param $data
-     * @param array $headers
-     * @return OrderResponse
-     * @throws Exception\ApiException
-     */
-    public static function atolLogs($data, $headers = [])
-    {
-        $api = new Api\Atol();
+        $api = new Api\FiscalData();
         $result = $api->get($data, $headers);
         return new OrderResponse($result);
     }

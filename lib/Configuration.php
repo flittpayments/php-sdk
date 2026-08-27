@@ -19,6 +19,21 @@ class Configuration
      */
     private static $CreditKey;
     /**
+     * @var string Reports (portal.flitt.com) API endpoint host
+     */
+    private static $ReportsApiUrl = 'portal.flitt.com';
+    /**
+     * @var string Reports application_id - a merchant-specific credential
+     * obtained from Flitt support, separate from merchant_id/secret_key
+     */
+    private static $ReportsApplicationId;
+    /**
+     * @var string Reports application private key - a merchant-specific
+     * credential obtained from Flitt support, used to sign the reports
+     * access-token request (see Helper\ApiHelper::generateReportsSignature())
+     */
+    private static $ReportsApplicationKey;
+    /**
      * @var string Api version default 1.0
      */
     private static $ApiVersion = '1.0';
@@ -90,6 +105,54 @@ class Configuration
     public static function getCreditKey()
     {
         return self::$CreditKey;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getReportsApiUrl()
+    {
+        return 'https://' . self::$ReportsApiUrl;
+    }
+
+    /**
+     * @param $ReportsApiUrl
+     */
+    public static function setReportsApiUrl($ReportsApiUrl)
+    {
+        self::$ReportsApiUrl = $ReportsApiUrl;
+    }
+
+    /**
+     * @param $ReportsApplicationId
+     */
+    public static function setReportsApplicationId($ReportsApplicationId)
+    {
+        self::$ReportsApplicationId = $ReportsApplicationId;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getReportsApplicationId()
+    {
+        return self::$ReportsApplicationId;
+    }
+
+    /**
+     * @param $ReportsApplicationKey
+     */
+    public static function setReportsApplicationKey($ReportsApplicationKey)
+    {
+        self::$ReportsApplicationKey = $ReportsApplicationKey;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getReportsApplicationKey()
+    {
+        return self::$ReportsApplicationKey;
     }
 
     /**

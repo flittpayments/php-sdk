@@ -52,6 +52,21 @@ class ApiHelper
     }
 
     /**
+     * Signature for the Reports (portal.flitt.com) application-token flow -
+     * a distinct scheme from generateSignature() above: sha512 of the
+     * application private key, application_id and date joined by '|'.
+     * @see https://docs.flitt.com/api/reports/
+     * @param string $application_key
+     * @param string $application_id
+     * @param string $date
+     * @return string
+     */
+    public static function generateReportsSignature($application_key, $application_id, $date)
+    {
+        return hash('sha512', $application_key . self::signatureSeparator . $application_id . self::signatureSeparator . $date);
+    }
+
+    /**
      * @param string $merchant_id
      * @return string
      */

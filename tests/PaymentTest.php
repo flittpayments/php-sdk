@@ -87,20 +87,14 @@ class PaymentTest extends TestCase
 
     }
 
-    /**
-     * @throws Exception\ApiException
-     */
-    public function testReports()
-    {
-        $this->setTestConfig();
-        $data = [
-            "date_from" => date('d.m.Y H:i:s', time() - 7200),
-            "date_to" => date('d.m.Y H:i:s', time() - 3600),
-        ];
-        $reports = Payment::reports($data);
-        $this->assertEquals($reports->getData()[0]['response_status'], 'success');
-
-    }
+    // No automated test for Payment::reports(): it authenticates against
+    // portal.flitt.com with a merchant-specific application_id/application key
+    // (contact Flitt support to obtain them; see
+    // Configuration::setReportsApplicationId()/setReportsApplicationKey() and
+    // https://docs.flitt.com/api/reports/) rather than the shared sandbox
+    // merchant_id/secret_key used everywhere else in this suite, so there are
+    // no test credentials this SDK can ship to exercise it here. See
+    // examples/Payment/reports.php for a usage example.
 
     /**
      * @param $data

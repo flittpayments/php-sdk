@@ -96,33 +96,36 @@ class OrderTest extends TestCase
     }
 
     /**
+     * Fiscalisation is only available for merchants in Uzbekistan (per
+     * docs.flitt.com/api/fiscal_data/); the sandbox test merchant (Georgia)
+     * gets a deterministic "Merchant account not found" - this at least
+     * confirms the request reaches the endpoint correctly (unlike the old
+     * /get_atol_logs/ route it replaces, which 404s outright).
      * @throws Exception\ApiException
      */
-    public function testTransactionList()
+    public function testFiscalData()
     {
         $this->setTestConfig();
-        $data = Order::transactionList($this->orderID);
+        $data = Order::fiscalData($this->orderID);
         $result = $data->getData();
-        $this->assertIsMyArray($result);
-        $this->assertEquals('approved', $result[0]['transaction_status']);
-
+        $this->assertEquals($result['response_status'], 'success');
+        $this->assertNotFalse(strpos($result['error'], 'Merchant account not found'), print_r($result, true));
     }
 
-    /**
-     * Order::atolLogs() and Order::settlement() could not be verified end-to-end
-     * against the live sandbox: atolLogs returns HTTP 404 (the /get_atol_logs/
-     * route appears to no longer exist), and settlement is rejected with
-     * "Parameter `order_type` is missing" even though the SDK does send it -
-     * likely the test merchant isn't provisioned for either. These tests cover
-     * the client-side required-param validation, which is verifiable offline.
-     */
-    public function testAtolLogsRequiresOrderId()
+    public function testFiscalDataRequiresOrderId()
     {
         $this->setTestConfig();
         $this->expectException(\InvalidArgumentException::class);
-        Order::atolLogs([]);
+        Order::fiscalData([]);
     }
 
+    /**
+     * Order::settlement() could not be verified end-to-end against the live
+     * sandbox: it's rejected with "Parameter `order_type` is missing" even
+     * though the SDK does send it - likely the test merchant isn't
+     * provisioned for it. This covers the client-side required-param
+     * validation, which is verifiable offline.
+     */
     public function testSettlementRequiresOperationId()
     {
         $this->setTestConfig();
