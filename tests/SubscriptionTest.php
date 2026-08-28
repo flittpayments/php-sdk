@@ -10,7 +10,7 @@ class SubscriptionTest extends TestCase
     private $secret_key = 'test';
     private $TestSubscriptionData;
 
-    public function __construct($name = null, array $data = array(), $dataName = '')
+    protected function setUp(): void
     {
         // start_time must be today or in the future, so compute it at run time
         // rather than hardcoding a date that will eventually fall in the past.
@@ -26,7 +26,6 @@ class SubscriptionTest extends TestCase
                 'readonly' => 'y'
             ]
         ];
-        parent::__construct($name, $data, $dataName);
     }
 
     private function setTestConfig()
@@ -73,8 +72,9 @@ class SubscriptionTest extends TestCase
      * (it needs a real browser session). This confirms the request wiring for
      * Subscription::stop() is correct by asserting the deterministic error the
      * sandbox returns for an order that was never completed. Uses a plain
-     * try/catch rather than expectExceptionMessageMatches(), which isn't
-     * available on the phpunit ~5 branch this SDK still supports.
+     * try/catch rather than expectExceptionMessageMatches(), matching the
+     * rest of this suite's convention for asserting on a live API's error
+     * message.
      * @throws Exception\ApiException
      */
     public function testStopOrderNotFound()

@@ -14,12 +14,12 @@ class OrderTest extends TestCase
 {
     private $mid = 1549901;
     private $secret_key = 'test';
-    private $TestCardnon3ds = [
+    private static $TestCardnon3ds = [
         'card_number' => '4444555511116666',
         'cvv2' => '333',
         'expiry_date' => '1222'
     ];
-    private $TestPcidssData = [
+    private static $TestPcidssData = [
         'currency' => 'GEL',
         'preauth' => 'Y',
         'amount' => 1000,
@@ -27,12 +27,30 @@ class OrderTest extends TestCase
     ];
     private $orderID = null;
 
-    public function __construct($name = null, array $data = array(), $dataName = '')
+    /**
+     * @var string order_id shared by every test in this class - created once
+     * via setUpBeforeClass() rather than per-test, since it requires a live
+     * API call and several tests (capture/reverse/fiscalData) operate on
+     * that same order.
+     */
+    private static $sharedOrderId;
+
+    /**
+     * @throws Exception\ApiException
+     */
+    public static function setUpBeforeClass(): void
+    {
+        Configuration::setMerchantId(1549901);
+        Configuration::setSecretKey('test');
+        Configuration::setApiVersion('1.0');
+        $data = Pcidss::start(array_merge(self::$TestPcidssData, self::$TestCardnon3ds));
+        self::$sharedOrderId = $data->getData()['order_id'];
+    }
+
+    protected function setUp(): void
     {
         $this->setTestConfig();
-        $TestData = array_merge($this->TestPcidssData, $this->TestCardnon3ds);
-        $this->orderID['order_id'] = $this->createOrder($TestData);
-        parent::__construct($name, $data, $dataName);
+        $this->orderID['order_id'] = self::$sharedOrderId;
     }
 
     private function setTestConfig()
@@ -144,16 +162,5 @@ class OrderTest extends TestCase
         } else {
             $this->assertInternalType('array', $array, $message);
         }
-    }
-
-    /**
-     * @param $data
-     * @return mixed
-     * @throws Exception\ApiException
-     */
-    private function createOrder($data)
-    {
-        $data = Pcidss::start($data);
-        return $data->getData()['order_id'];
     }
 }

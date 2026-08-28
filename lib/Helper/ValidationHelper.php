@@ -18,10 +18,12 @@ class ValidationHelper
     {
 
         foreach ($required as $key => $param) {
-            if (is_array($param))
-                self::validateRequiredParams($params[$key], $param);
             if (!array_key_exists($key, $params)) {
                 throw new InvalidArgumentException(sprintf('Required param "%s" is missing', $key));
+            }
+            if (is_array($param)) {
+                self::validateRequiredParams($params[$key], $param);
+                continue;
             }
             if (array_key_exists($key, $required) && empty($param)) {
                 throw new InvalidArgumentException(sprintf('Required param "%s" is empty', $key));

@@ -2,13 +2,15 @@
 require_once '../configuration.php';
 require_once SDK_ROOTPATH . '/../vendor/autoload.php';
 
-// Get payment reports https://docs.flitt.com/api/reports/
+// Get company reports https://docs.flitt.com/api/reports/
 //
 // IMPORTANT: reports authenticate with a merchant-specific application_id and
 // application private key - NOT the merchant_id/secret_key used everywhere
-// else in this SDK. Contact Flitt support to obtain your own; the sandbox
-// test credentials used in the other examples do NOT work here, so this
-// example cannot be run as-is - replace the placeholders below with your own.
+// else in this SDK. For your own reports, contact Flitt support to obtain
+// your own application_id/key - replace the placeholders below with those.
+// To just try this example against sample data, use the shared sandbox
+// reports application instead: application_id '1019', key 'test',
+// merchant_id 1549902 (see tests/CompanyReportsTest.php).
 \Flitt\Configuration::setReportsApplicationId('%your_application_id%');
 \Flitt\Configuration::setReportsApplicationKey('%your_application_private_key%');
 
@@ -22,14 +24,14 @@ try {
             ['s' => 'order_timestart_to', 'm' => 'dateis', 'v' => date('Y-m-d')],
         ]
     ];
-    $reports = \Flitt\Payment::reports($data);
+    $reports = \Flitt\CompanyReports::get($data);
     //getting returned data
     ?>
     <!doctype html>
     <html lang="en-US">
     <head>
         <meta charset="UTF-8">
-        <title>Payment reports</title>
+        <title>Company reports</title>
         <style>
             table tr td, table tr th {
                 padding: 10px;
@@ -40,7 +42,7 @@ try {
     <table style="margin: auto" border="1">
         <thead>
         <tr>
-            <th style="text-align: center" colspan="2">Payment reports request</th>
+            <th style="text-align: center" colspan="2">Company reports request</th>
         </tr>
         <tr>
             <th style="text-align: left"

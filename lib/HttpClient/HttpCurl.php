@@ -2,6 +2,7 @@
 
 namespace Flitt\HttpClient;
 
+use Flitt\Configuration;
 use Flitt\Exception;
 
 class HttpCurl implements ClientInterface
@@ -14,7 +15,7 @@ class HttpCurl implements ClientInterface
         CURLOPT_HEADER => false,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 60,
-        CURLOPT_USERAGENT => 'php-sdk',
+        CURLOPT_USERAGENT => 'php-sdk/' . Configuration::VERSION,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_SSL_VERIFYPEER => 1,
         CURLOPT_TIMEOUT => 60
@@ -47,9 +48,9 @@ class HttpCurl implements ClientInterface
         }
         $response = curl_exec($ch);
         $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
         if ($httpStatus != 200)
             throw new Exception\HttpClientException(sprintf('Status is: %s', $httpStatus));
-        curl_close($ch);
         return trim($response);
     }
 

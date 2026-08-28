@@ -29,13 +29,16 @@ class ResultHelper
         if (!array_key_exists('signature', $result))
             return false;
         $signature = $result['signature'];
+        // hash_equals() (constant-time) rather than '===', so signature
+        // verification isn't vulnerable to a timing attack (a naive '==='
+        // short-circuits on the first mismatched byte).
         if ($ver === '2.0') {
             $encoded = $result['encodedData'];
-            return $signature === Signature::generateSignature($encoded, $secretKey, $ver);
+            return hash_equals(Signature::generateSignature($encoded, $secretKey, $ver), (string)$signature);
         } else {
             $response = self::clearResult($result);
         }
-        return $signature === Signature::generateSignature($response, $secretKey, $ver);
+        return hash_equals(Signature::generateSignature($response, $secretKey, $ver), (string)$signature);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Flitt\Api\Payment;
+namespace Flitt\Api\CompanyReports;
 
 use Flitt\Configuration;
 use Flitt\Helper\ApiHelper;
@@ -8,7 +8,7 @@ use Flitt\Helper\ResponseHelper;
 use Flitt\Exception\ApiException;
 
 /**
- * Obtains a short-lived (1 hour) access token for the Reports API on
+ * Obtains a short-lived (1 hour) access token for the Company Reports API on
  * portal.flitt.com. This is a separate credential/auth system from the rest
  * of the SDK: a merchant-specific application_id + application private key,
  * not the regular merchant_id/secret_key - contact Flitt support to obtain

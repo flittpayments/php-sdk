@@ -1,6 +1,6 @@
 <?php
 
-namespace Flitt\Api\Payment;
+namespace Flitt\Api\CompanyReports;
 
 use Flitt\Configuration;
 use Flitt\Helper\ApiHelper;
@@ -9,13 +9,14 @@ use Flitt\Helper\ValidationHelper;
 use Flitt\Exception\ApiException;
 
 /**
- * Payment reports (portal.flitt.com). Requires a merchant-specific
+ * Company Reports (portal.flitt.com). Requires a merchant-specific
  * application_id/application key configured via
  * Configuration::setReportsApplicationId()/setReportsApplicationKey() -
- * contact Flitt support to obtain them. These aren't part of the shared
- * sandbox test credentials used elsewhere in this SDK, so this endpoint
- * can't be covered by this SDK's own automated tests; see
- * examples/Payment/reports.php.
+ * contact Flitt support to obtain your own for production use. This is a
+ * separate credential pair from the merchant_id/secret_key used elsewhere
+ * in this SDK; a shared sandbox reports application
+ * (application_id '1019', key 'test', merchant 1549902) is used by
+ * tests/CompanyReportsTest.php - see also examples/CompanyReports/report.php.
  * @see https://docs.flitt.com/api/reports/
  */
 class Reports

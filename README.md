@@ -22,7 +22,7 @@ composer require flittpayments/php-sdk
 ```
 #### Manual installation
 ```cmd
-git clone -b master https://github.com/flittpayments/php-sdk.git
+git clone https://github.com/flittpayments/php-sdk.git
 ```
 
 ```php
@@ -56,7 +56,7 @@ echo $order['order_status']; // e.g. 'approved', 'declined', 'processing'
 $orderData->isValid();       // verifies the response signature
 ```
 See [examples/Order/status.php](examples/Order/status.php) for a full example, and
-[docs.flitt.com/api/status](https://docs.flitt.com/api/status/) for the API reference.
+[docs.flitt.com/api/order-status](https://docs.flitt.com/api/order-status/) for the API reference.
 
 ## IBAN withdrawal
 ```php
@@ -97,17 +97,18 @@ $data = \Flitt\P2pcredit::start([
 See [examples/P2pcredit/p2pcredit_rectoken.php](examples/P2pcredit/p2pcredit_rectoken.php) and
 [docs.flitt.com/api/create-order-p2pcredit](https://docs.flitt.com/api/create-order-p2pcredit/).
 
-## Payment reports
+## Company reports
 > Reports authenticate with a merchant-specific `application_id` and
 > application private key — **not** the `merchant_id`/`secret_key` used
-> everywhere else in this SDK. Contact Flitt support to obtain your own; there
-> are no shared sandbox test credentials for this endpoint, so it isn't
-> covered by this SDK's automated tests.
+> everywhere else in this SDK. For your own reports, contact Flitt support to
+> obtain your own `application_id`/key. A shared sandbox reports application
+> (`application_id: '1019'`, key `'test'`, merchant `1549902`) is used by
+> `tests/CompanyReportsTest.php` to cover this endpoint end-to-end.
 ```php
 \Flitt\Configuration::setReportsApplicationId('%your_application_id%');
 \Flitt\Configuration::setReportsApplicationKey('%your_application_private_key%');
 
-$reports = \Flitt\Payment::reports([
+$reports = \Flitt\CompanyReports::get([
     'report_id' => 745, // see the report list at docs.flitt.com/api/reports/
     'on_page' => 10,
     'page' => 1,
@@ -117,8 +118,10 @@ $reports = \Flitt\Payment::reports([
     ]
 ]);
 ```
-See [examples/Payment/reports.php](examples/Payment/reports.php) and
+See [examples/CompanyReports/report.php](examples/CompanyReports/report.php) and
 [docs.flitt.com/api/reports](https://docs.flitt.com/api/reports/).
+> `Payment::reports()` still works as a deprecated alias for
+> `CompanyReports::get()`.
 
 ## Open Banking / Installments deeplinks
 ```php
@@ -142,8 +145,8 @@ To check it you can use build-in php server
 cd ~/php-sdk
 php -S localhost:8000
 ```
-[Checkout examples](https://github.com/flittpayments/php-sdk/tree/master/examples)
+[Checkout examples](https://github.com/flittpayments/php-sdk/tree/main/examples)
 
 ## Author
 
-D.M.
+[Flitt](https://flitt.com)
