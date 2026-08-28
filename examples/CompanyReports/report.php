@@ -6,17 +6,18 @@ require_once SDK_ROOTPATH . '/../vendor/autoload.php';
 //
 // IMPORTANT: reports authenticate with a merchant-specific application_id and
 // application private key - NOT the merchant_id/secret_key used everywhere
-// else in this SDK. For your own reports, contact Flitt support to obtain
-// your own application_id/key - replace the placeholders below with those.
-// To just try this example against sample data, use the shared sandbox
-// reports application instead: application_id '1019', key 'test',
-// merchant_id 1549902 (see tests/CompanyReportsTest.php).
-\Flitt\Configuration::setReportsApplicationId('%your_application_id%');
-\Flitt\Configuration::setReportsApplicationKey('%your_application_private_key%');
+// else in this SDK. The values below are the shared Reports sandbox
+// (application_id '1019', key 'test', merchant_id 1549902 - it has sample
+// report data and isn't used for transactions; see tests/CompanyReportsTest.php),
+// so this example runs as-is. For your own reports, contact Flitt support to
+// obtain your own application_id/key and replace these with those.
+\Flitt\Configuration::setReportsApplicationId('1019');
+\Flitt\Configuration::setReportsApplicationKey('test');
 
 try {
     $data = [
         'report_id' => 745, // "All transactions report", see the report list at https://docs.flitt.com/api/reports/
+        'merchant_id' => 1549902,
         'on_page' => 10,
         'page' => 1,
         'filters' => [
