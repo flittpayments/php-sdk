@@ -4,9 +4,15 @@ namespace Flitt\Api\Order;
 
 use Flitt\Api\Api;
 
-class TransactionList extends Api
+/**
+ * Fiscal receipt data for an order. Replaces the old /get_atol_logs/ endpoint,
+ * which is no longer reachable (returns HTTP 404) and isn't documented on
+ * docs.flitt.com anymore.
+ * @see https://docs.flitt.com/api/fiscal_data/
+ */
+class FiscalData extends Api
 {
-    private $url = '/transaction_list/';
+    private $url = '/fiscal_data/';
     /**
      * Minimal required params
      * @var array

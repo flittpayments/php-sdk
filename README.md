@@ -29,6 +29,10 @@ git clone -b master https://github.com/flittpayments/php-sdk.git
 <?php
 require '/path-to-sdk/autoload.php';
 ```
+
+> **Version 2.0** removed legacy XML content-type support - only `json` and `form`
+> request types are supported now. See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## Simple Start
 ```php
 require 'vendor/autoload.php';
@@ -43,6 +47,92 @@ $data = \Flitt\Checkout::url($checkoutData);
 $url = $data->getUrl();
 //$data->toCheckout() - redirect to checkout
 ```
+
+## Get order status
+```php
+$orderData = \Flitt\Order::status(['order_id' => $order_id]);
+$order = $orderData->getData();
+echo $order['order_status']; // e.g. 'approved', 'declined', 'processing'
+$orderData->isValid();       // verifies the response signature
+```
+See [examples/Order/status.php](examples/Order/status.php) for a full example, and
+[docs.flitt.com/api/status](https://docs.flitt.com/api/status/) for the API reference.
+
+## IBAN withdrawal
+```php
+\Flitt\Configuration::setCreditKey('testcredit'); // payout requests use the credit key, not the secret key
+$data = \Flitt\IbanCredit::credit([
+    'currency' => 'GEL',
+    'amount' => 1000,
+    'receiver_iban' => 'GE00TB0000000000000003'
+]);
+```
+See [examples/IbanCredit/credit.php](examples/IbanCredit/credit.php) and
+[docs.flitt.com/api/create-order-ibancredit](https://docs.flitt.com/api/create-order-ibancredit/).
+
+## P2P credit (card payout) using a rectoken
+A payout can target a card that was previously used for a purchase, by using
+the `rectoken` obtained from that purchase instead of a raw
+`receiver_card_number`:
+```php
+\Flitt\Configuration::setSecretKey('test');
+$purchase = \Flitt\Pcidss::start([
+    'currency' => 'GEL',
+    'amount' => 1000,
+    'client_ip' => '127.2.2.1',
+    'card_number' => '4444555511116666',
+    'cvv2' => '333',
+    'expiry_date' => '1222',
+    'required_rectoken' => 'Y'
+]);
+$rectoken = $purchase->getData()['rectoken'];
+
+\Flitt\Configuration::setCreditKey('testcredit'); // payout requests use the credit key, not the secret key
+$data = \Flitt\P2pcredit::start([
+    'currency' => 'GEL',
+    'amount' => 500,
+    'receiver_rectoken' => $rectoken
+]);
+```
+See [examples/P2pcredit/p2pcredit_rectoken.php](examples/P2pcredit/p2pcredit_rectoken.php) and
+[docs.flitt.com/api/create-order-p2pcredit](https://docs.flitt.com/api/create-order-p2pcredit/).
+
+## Payment reports
+> Reports authenticate with a merchant-specific `application_id` and
+> application private key — **not** the `merchant_id`/`secret_key` used
+> everywhere else in this SDK. Contact Flitt support to obtain your own; there
+> are no shared sandbox test credentials for this endpoint, so it isn't
+> covered by this SDK's automated tests.
+```php
+\Flitt\Configuration::setReportsApplicationId('%your_application_id%');
+\Flitt\Configuration::setReportsApplicationKey('%your_application_private_key%');
+
+$reports = \Flitt\Payment::reports([
+    'report_id' => 745, // see the report list at docs.flitt.com/api/reports/
+    'on_page' => 10,
+    'page' => 1,
+    'filters' => [
+        ['s' => 'order_timestart_from', 'm' => 'dateis', 'v' => '2026-08-01'],
+        ['s' => 'order_timestart_to', 'm' => 'dateis', 'v' => '2026-08-31'],
+    ]
+]);
+```
+See [examples/Payment/reports.php](examples/Payment/reports.php) and
+[docs.flitt.com/api/reports](https://docs.flitt.com/api/reports/).
+
+## Open Banking / Installments deeplinks
+```php
+$data = \Flitt\Checkout::deeplink([
+    'currency' => 'GEL',
+    'amount' => 1000,
+    'payment_systems' => 'opb',      // or 'installments'
+    'payment_method' => 'tbc'        // a single bank; 'x' is the sandbox Demo Bank
+]);
+$deeplinkUrl = $data->getUrl();
+```
+See [examples/Checkout/deeplink.php](examples/Checkout/deeplink.php) and
+[docs.flitt.com/api/bank-app-deeplinks](https://docs.flitt.com/api/bank-app-deeplinks/).
+
 # Api
 
 See [php-docs](https://flittpayments.github.io/php-docs/)

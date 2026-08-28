@@ -42,6 +42,9 @@ class ValidationHelper
                 case 'ip':
                     self::validateIP($params[$key]);
                     break;
+                case 'iban':
+                    self::validateIban($params[$key]);
+                    break;
             }
 
         }
@@ -141,5 +144,32 @@ class ValidationHelper
         } else {
             throw new InvalidArgumentException(sprintf('\'%s\' is not a valid ip', $ip));
         }
+    }
+
+    /**
+     * Validates IBAN structure and ISO 7064 MOD-97-10 checksum
+     * @param $iban
+     * @return bool
+     */
+    protected static function validateIban($iban)
+    {
+        $normalized = strtoupper(str_replace(' ', '', $iban));
+        if (!preg_match('/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/', $normalized)) {
+            throw new InvalidArgumentException(sprintf('\'%s\' is not a valid IBAN', $iban));
+        }
+        $rearranged = substr($normalized, 4) . substr($normalized, 0, 4);
+        $numeric = '';
+        foreach (str_split($rearranged) as $char) {
+            $numeric .= ctype_alpha($char) ? (string)(ord($char) - 55) : $char;
+        }
+        // Chunked MOD-97 (ISO 7064) so we never overflow a native int, no bcmath dependency.
+        $remainder = 0;
+        for ($i = 0; $i < strlen($numeric); $i += 7) {
+            $remainder = (int)($remainder . substr($numeric, $i, 7)) % 97;
+        }
+        if ($remainder !== 1) {
+            throw new InvalidArgumentException(sprintf('\'%s\' is not a valid IBAN (checksum failed)', $iban));
+        }
+        return true;
     }
 }

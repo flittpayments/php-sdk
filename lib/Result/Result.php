@@ -74,9 +74,6 @@ class Result
     {
         if ($this->apiVersion === '1.0' && is_string($result)) {
             switch ($this->requestType) {
-                case 'xml':
-                    $result = ResponseHelper::xmlToArray($result, true, true, 'UTF-8');
-                    break;
                 case 'json':
                     $result = ResponseHelper::jsonToArray($result);
                     break;

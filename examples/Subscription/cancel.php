@@ -11,7 +11,7 @@ try {
         'card_number' => '4444555511116666',
         'cvv2' => '333',
         'expiry_date' => '1232',
-        'currency' => 'UAH',
+        'currency' => 'GEL',
         'amount' => 1000,
         'client_ip' => '127.2.2.1',
         'recurring_data' => [

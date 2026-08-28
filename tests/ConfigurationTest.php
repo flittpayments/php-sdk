@@ -63,13 +63,33 @@ class ConfigurationTest extends TestCase
 
     public function testSetMerchantId()
     {
-        Configuration::setMerchantId(123);
-        $this->assertEquals(123, Configuration::getMerchantId());
+        Configuration::setMerchantId(1549901);
+        $this->assertEquals(1549901, Configuration::getMerchantId());
     }
 
     public function testSetCreditKey()
     {
         Configuration::setCreditKey('something-secret');
         $this->assertEquals('something-secret', Configuration::getCreditKey());
+    }
+
+    public function testGetReportsApiUrl()
+    {
+        $this->assertEquals('https://portal.flitt.com', Configuration::getReportsApiUrl());
+        Configuration::setReportsApiUrl('portal.example.com');
+        $this->assertEquals('https://portal.example.com', Configuration::getReportsApiUrl());
+        Configuration::setReportsApiUrl('portal.flitt.com');
+    }
+
+    public function testSetReportsApplicationId()
+    {
+        Configuration::setReportsApplicationId('1234');
+        $this->assertEquals('1234', Configuration::getReportsApplicationId());
+    }
+
+    public function testSetReportsApplicationKey()
+    {
+        Configuration::setReportsApplicationKey('something-secret');
+        $this->assertEquals('something-secret', Configuration::getReportsApplicationKey());
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Flitt\Response;
 
-use Flitt\Exception\ApiException;
 use Flitt\Helper\ResponseHelper;
 
 class OrderResponse extends Response
@@ -54,35 +53,4 @@ class OrderResponse extends Response
         return false;
     }
 
-    /**
-     * Checking if Captured transaction
-     * @return bool
-     * @throws \Exception
-     */
-    public function isCapturedByList()
-    {
-        $data = $this->getCapturedTransAction();
-
-        if (!array_key_exists('capture_status', $data)) throw new \Exception('invalid response');
-        return $data['capture_status'] != 'captured' ? false : true;
-    }
-
-    /**
-     * @return mixed
-     * @throws ApiException
-     */
-    private function getCapturedTransAction()
-    {
-        foreach ($this->getData() as $data) {
-            if (($data['tran_type'] == 'purchase' || $data['tran_type'] == 'verification')
-                && $data['preauth'] == 'Y'
-                && $data['transaction_status'] == 'approved'
-            ) {
-                return $data;
-            } else {
-                throw new ApiException('Nothing to capture');
-            }
-        }
-        return false;
-    }
 }

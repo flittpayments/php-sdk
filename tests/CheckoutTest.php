@@ -79,6 +79,68 @@ class CheckoutTest extends TestCase
     }
 
     /**
+     * @throws Exception\ApiException
+     */
+    public function testButton()
+    {
+        $this->setTestConfig();
+        $result = Checkout::button($this->fullTestData);
+        $this->assertIsMyString($result, "Got a " . gettype($result) . " instead of a string");
+    }
+
+    /**
+     * @throws Exception\ApiException
+     */
+    public function testDeeplinkOpenBanking()
+    {
+        $this->setTestConfig();
+        Configuration::setRequestType('json');
+        $data = array_merge($this->fullTestData, [
+            'payment_systems' => 'opb',
+            'payment_method' => 'x' // sandbox Demo Bank, see https://docs.flitt.com/api/testing/
+        ]);
+        $result = Checkout::deeplink($data);
+        $this->assertNotEmpty($result->getUrl(), 'checkout_url is empty');
+    }
+
+    /**
+     * @throws Exception\ApiException
+     */
+    public function testDeeplinkInstallments()
+    {
+        $this->setTestConfig();
+        Configuration::setRequestType('json');
+        $data = array_merge($this->fullTestData, [
+            'payment_systems' => 'installments',
+            'payment_method' => 'x' // sandbox Demo Bank, see https://docs.flitt.com/api/testing/
+        ]);
+        $result = Checkout::deeplink($data);
+        $this->assertNotEmpty($result->getUrl(), 'checkout_url is empty');
+    }
+
+    public function testDeeplinkRejectsInvalidPaymentSystems()
+    {
+        $this->setTestConfig();
+        Configuration::setRequestType('json');
+        $this->expectException(\InvalidArgumentException::class);
+        Checkout::deeplink(array_merge($this->fullTestData, [
+            'payment_systems' => 'card',
+            'payment_method' => 'x'
+        ]));
+    }
+
+    public function testDeeplinkRejectsInvalidPaymentMethod()
+    {
+        $this->setTestConfig();
+        Configuration::setRequestType('json');
+        $this->expectException(\InvalidArgumentException::class);
+        Checkout::deeplink(array_merge($this->fullTestData, [
+            'payment_systems' => 'opb',
+            'payment_method' => 'unknown_bank'
+        ]));
+    }
+
+    /**
      * Checking correct result for token request
      * @param $result
      */
