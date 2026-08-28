@@ -100,16 +100,18 @@ See [examples/P2pcredit/p2pcredit_rectoken.php](examples/P2pcredit/p2pcredit_rec
 ## Company reports
 > Reports authenticate with a merchant-specific `application_id` and
 > application private key — **not** the `merchant_id`/`secret_key` used
-> everywhere else in this SDK. For your own reports, contact Flitt support to
-> obtain your own `application_id`/key. A shared sandbox reports application
-> (`application_id: '1019'`, key `'test'`, merchant `1549902`) is used by
-> `tests/CompanyReportsTest.php` to cover this endpoint end-to-end.
+> everywhere else in this SDK. The snippet below uses the shared Reports
+> sandbox (`application_id: '1019'`, key `'test'`, merchant `1549902`) - it
+> has sample report data and isn't used for transactions; see
+> `tests/CompanyReportsTest.php`. For your own reports, contact Flitt
+> support to obtain your own `application_id`/key and replace these.
 ```php
-\Flitt\Configuration::setReportsApplicationId('%your_application_id%');
-\Flitt\Configuration::setReportsApplicationKey('%your_application_private_key%');
+\Flitt\Configuration::setReportsApplicationId('1019');
+\Flitt\Configuration::setReportsApplicationKey('test');
 
 $reports = \Flitt\CompanyReports::get([
     'report_id' => 745, // see the report list at docs.flitt.com/api/reports/
+    'merchant_id' => 1549902,
     'on_page' => 10,
     'page' => 1,
     'filters' => [
