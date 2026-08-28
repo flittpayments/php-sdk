@@ -23,11 +23,6 @@ class ValidationTest extends TestCase
         'client_ip' => 'ip'
     ];
 
-    public function __construct($name = null, array $data = array(), $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-    }
-
     /**
      * @throws InvalidArgumentException
      */

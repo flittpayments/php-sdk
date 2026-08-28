@@ -40,12 +40,14 @@ class ConfigurationTest extends TestCase
         $this->assertInstanceOf('\\Flitt\\HttpClient\\HttpGuzzle', Configuration::getHttpClient());
         Configuration::setHttpClient('HttpCurl');
         $this->assertInstanceOf('\\Flitt\\HttpClient\\HttpCurl', Configuration::getHttpClient());
-        if (method_exists(get_parent_class($this), 'expectNotice')){
-            $this->expectNotice();
-        } else {
-            $this->expectException('PHPUnit_Framework_Error_Notice');
-        }
-        $this->assertFalse(Configuration::setHttpClient('Unknown'));
+
+        // An unrecognized client name/class falls back to HttpCurl and
+        // emits an E_USER_NOTICE (suppressed here - PHPUnit's own
+        // expectNotice()/expectException('PHPUnit_Framework_Error_Notice')
+        // for catching that notice were both removed by PHPUnit 10, with no
+        // direct replacement).
+        $client = @Configuration::setHttpClient('Unknown');
+        $this->assertInstanceOf('\\Flitt\\HttpClient\\HttpCurl', $client);
     }
 
     public function testSetHttpClientClass()

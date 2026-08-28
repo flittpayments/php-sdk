@@ -7,6 +7,15 @@ use Flitt\HttpClient\ClientInterface;
 class Configuration
 {
     /**
+     * Single source of truth for the SDK version: exposed to consumers as
+     * Configuration::VERSION, and used to build the User-Agent header in
+     * HttpCurl/HttpGuzzle so it never drifts out of sync with an
+     * independently hardcoded string. Composer's own version resolution
+     * (git tags) is separate from this - bump both together on release.
+     */
+    const VERSION = '2.1.0';
+
+    /**
      * @var int Merchant ID
      */
     private static $MerchantID;

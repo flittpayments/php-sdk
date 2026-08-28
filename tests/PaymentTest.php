@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dm
- * Date: 21.05.18
- * Time: 0:15
- */
 
 namespace Flitt;
 
@@ -20,30 +14,40 @@ class PaymentTest extends TestCase
         'amount' => 111,
         'rectoken' => ''
     ];
-    private $TestCardnon3ds = [
+    private static $TestCardnon3ds = [
         'card_number' => '4444555511116666',
         'cvv2' => '333',
         'expiry_date' => '1222',
         'required_rectoken' => 'Y'
     ];
-    private $TestPcidssData = [
+    private static $TestPcidssData = [
         'currency' => 'GEL',
         'amount' => 1000,
         'client_ip' => '127.2.2.1'
     ];
 
     /**
-     * PaymentTest constructor.
-     * @param null $name
-     * @param array $data
-     * @param string $dataName
+     * @var string rectoken shared by every test in this class - fetched once
+     * via setUpBeforeClass() rather than per-test, since it requires a live
+     * API call.
+     */
+    private static $sharedRectoken;
+
+    /**
      * @throws Exception\ApiException
      */
-    public function __construct($name = null, array $data = array(), $dataName = '')
+    public static function setUpBeforeClass(): void
+    {
+        Configuration::setMerchantId(1549901);
+        Configuration::setSecretKey('test');
+        $result = Pcidss::start(array_merge(self::$TestPcidssData, self::$TestCardnon3ds));
+        self::$sharedRectoken = $result->getData()['rectoken'];
+    }
+
+    protected function setUp(): void
     {
         $this->setTestConfig();
-        $this->TestData['rectoken'] = $this->getToken(array_merge($this->TestPcidssData, $this->TestCardnon3ds));
-        parent::__construct($name, $data, $dataName);
+        $this->TestData['rectoken'] = self::$sharedRectoken;
     }
 
     /**
@@ -87,23 +91,14 @@ class PaymentTest extends TestCase
 
     }
 
-    // No automated test for Payment::reports(): it authenticates against
-    // portal.flitt.com with a merchant-specific application_id/application key
-    // (contact Flitt support to obtain them; see
+    // CompanyReports::get() (Payment::reports() is a deprecated alias for it)
+    // authenticates against portal.flitt.com with a merchant-specific
+    // application_id/application key - see
     // Configuration::setReportsApplicationId()/setReportsApplicationKey() and
-    // https://docs.flitt.com/api/reports/) rather than the shared sandbox
-    // merchant_id/secret_key used everywhere else in this suite, so there are
-    // no test credentials this SDK can ship to exercise it here. See
-    // examples/Payment/reports.php for a usage example.
-
-    /**
-     * @param $data
-     * @return mixed
-     * @throws Exception\ApiException
-     */
-    private function getToken($data)
-    {
-        $data = Pcidss::start($data);
-        return $data->getData()['rectoken'];
-    }
+    // https://docs.flitt.com/api/reports/ - rather than the shared sandbox
+    // merchant_id/secret_key used everywhere else in this suite. It's covered
+    // separately in tests/CompanyReportsTest.php, via a shared sandbox
+    // reports application dedicated to that endpoint. See
+    // examples/CompanyReports/report.php for a usage example against your
+    // own production credentials.
 }

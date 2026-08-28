@@ -1,12 +1,15 @@
 <?php
 //Emulating payment result api 1.0 format json
-//To check it not use php-build in server
+//Run this via the built-in PHP dev server documented in the README
+//(php -S localhost:8000), then request this script from a browser/curl.
+//The target below is intentionally hardcoded rather than derived from
+//$_SERVER['HTTP_HOST']/SERVER_PORT: those reflect the request's Host header,
+//which a client controls, and using them to build a server-side cURL target
+//is an SSRF pattern - it would let a request to this script make the server
+//issue a request to an attacker-chosen host instead of its own dev server.
+$response_url = "http://localhost:8000";
 $curl = curl_init();
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-$domainName = $_SERVER['HTTP_HOST'];
-$response_url = $protocol . $domainName;
 curl_setopt_array($curl, array(
-    CURLOPT_PORT => $_SERVER['SERVER_PORT'],
     CURLOPT_URL => $response_url . "/examples/result.php",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => "",

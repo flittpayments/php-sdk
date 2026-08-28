@@ -3,6 +3,7 @@
 /** Main classes */
 require(dirname(__FILE__) . '/lib/Configuration.php');
 require(dirname(__FILE__) . '/lib/Checkout.php');
+require(dirname(__FILE__) . '/lib/CompanyReports.php');
 require(dirname(__FILE__) . '/lib/IbanCredit.php');
 require(dirname(__FILE__) . '/lib/Order.php');
 require(dirname(__FILE__) . '/lib/P2pcredit.php');
@@ -19,6 +20,8 @@ require(dirname(__FILE__) . '/lib/Api/Checkout/Token.php');
 require(dirname(__FILE__) . '/lib/Api/Checkout/Form.php');
 require(dirname(__FILE__) . '/lib/Api/Checkout/Verification.php');
 require(dirname(__FILE__) . '/lib/Api/Checkout/Deeplink.php');
+require(dirname(__FILE__) . '/lib/Api/CompanyReports/Reports.php');
+require(dirname(__FILE__) . '/lib/Api/CompanyReports/ReportsToken.php');
 require(dirname(__FILE__) . '/lib/Api/Order/FiscalData.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Capture.php');
 require(dirname(__FILE__) . '/lib/Api/Order/Reverse.php');
@@ -30,8 +33,6 @@ require(dirname(__FILE__) . '/lib/Api/IbanCredit/Credit.php');
 require(dirname(__FILE__) . '/lib/Api/Payment/Pcidss/StepOne.php');
 require(dirname(__FILE__) . '/lib/Api/Payment/Pcidss/StepTwo.php');
 require(dirname(__FILE__) . '/lib/Api/Payment/Rectoken.php');
-require(dirname(__FILE__) . '/lib/Api/Payment/Reports.php');
-require(dirname(__FILE__) . '/lib/Api/Payment/ReportsToken.php');
 
 /** Exceptions classes */
 require(dirname(__FILE__) . '/lib/Exception/MainException.php');

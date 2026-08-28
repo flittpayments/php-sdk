@@ -2,6 +2,7 @@
 
 namespace Flitt\HttpClient;
 
+use Flitt\Configuration;
 
 class HttpGuzzle implements ClientInterface
 {
@@ -14,7 +15,7 @@ class HttpGuzzle implements ClientInterface
         CURLOPT_HEADER => false,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 60,
-        CURLOPT_USERAGENT => 'php-sdk-v2',
+        CURLOPT_USERAGENT => 'php-sdk/' . Configuration::VERSION,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_SSL_VERIFYPEER => 1,
         CURLOPT_TIMEOUT => 60
@@ -35,8 +36,10 @@ class HttpGuzzle implements ClientInterface
         $client = new \GuzzleHttp\Client();
         $guzzleHeaders = [];
         foreach ($headers as $header) {
-            $guzzleHeaders = explode(':', $header);
-            $guzzleHeaders = [$guzzleHeaders[0] => $guzzleHeaders[1]];
+            $parts = explode(':', $header, 2);
+            $name = trim($parts[0]);
+            $value = isset($parts[1]) ? trim($parts[1]) : '';
+            $guzzleHeaders[$name] = $value;
         }
         $data = [
             'body' => $params,

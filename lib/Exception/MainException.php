@@ -5,9 +5,21 @@ use Exception;
 
 abstract class MainException extends Exception
 {
-    private $pspCode;
-    private $httpBody;
+    /**
+     * @var int|null HTTP status code of the failed request, if known
+     */
+    private $httpStatus;
+    /**
+     * @var string|int|null PSP-specific error code from the API response ('error_code'), if any
+     */
+    private $pspErrorCode;
+    /**
+     * @var array|null Raw decoded response body, if any
+     */
     private $json;
+    /**
+     * @var string|null API-supplied request_id, if any - include this when contacting Flitt support
+     */
     private $requestId;
 
     public function __construct(
@@ -18,26 +30,51 @@ abstract class MainException extends Exception
     {
         $this->httpStatus = $httpStatus;
         $this->json = $json;
-        $this->pspCode = isset($json["response"]["response_status"]) ? $message = $json["response"]["error_message"] . ".\n" . $message : null;
-        $this->requestId = isset($json["response"]["request_id"]) ? $message .= ' Request ID: ' . $json["response"]["request_id"] . "\n" : null;
+
+        $errorCode = isset($json['response']['error_code']) ? $json['response']['error_code'] : null;
+        $errorMessage = isset($json['response']['error_message']) ? $json['response']['error_message'] : null;
+        $requestId = isset($json['response']['request_id']) ? $json['response']['request_id'] : null;
+
+        $this->pspErrorCode = $errorCode;
+        $this->requestId = $requestId;
+
+        if ($errorMessage !== null) {
+            $message = rtrim($errorMessage, '.') . ".\n" . $message;
+        }
+        if ($requestId !== null) {
+            $message .= ' Request ID: ' . $requestId;
+        }
+
         parent::__construct($message);
     }
 
-    public function getFondyCode()
+    /**
+     * @return string|int|null The PSP-specific error code from the API response, if any.
+     */
+    public function getPspErrorCode()
     {
-        return $this->pspCode;
+        return $this->pspErrorCode;
     }
 
-    public function getHttpBody()
+    /**
+     * @return int|null The HTTP status code of the failed request, if known.
+     */
+    public function getHttpStatus()
     {
-        return $this->httpBody;
+        return $this->httpStatus;
     }
 
+    /**
+     * @return array|null The raw decoded response body, if any.
+     */
     public function getJsonBody()
     {
         return $this->json;
     }
 
+    /**
+     * @return string|null The request_id from the API response, if any.
+     */
     public function getRequestId()
     {
         return $this->requestId;

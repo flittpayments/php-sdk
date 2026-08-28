@@ -129,6 +129,6 @@ class ApiHelper
      */
     public static function toFormData($data)
     {
-        return http_build_query($data, NULL, '&');
+        return http_build_query($data, '', '&');
     }
 }

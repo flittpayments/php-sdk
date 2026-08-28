@@ -22,21 +22,19 @@ class Payment
     }
 
     /**
-     * Get payment reports (portal.flitt.com). Requires
-     * Configuration::setReportsApplicationId()/setReportsApplicationKey() to
-     * be set first - see Api\Payment\Reports and
-     * https://docs.flitt.com/api/reports/. Returns the decoded report
-     * response directly ({data, fields, rows_count, rows_page, rows_on_page})
-     * rather than wrapped in Response, since this endpoint uses bearer-token
-     * auth and has no merchant-secret-key signature to verify.
+     * @deprecated use CompanyReports::get() instead. Reports moved to its
+     * own top-level class since it authenticates with a separate
+     * application_id/application key credential pair and lives on a
+     * different host (portal.flitt.com) than the rest of this SDK. Kept
+     * here as a backward-compatible alias - see CompanyReports and
+     * https://docs.flitt.com/api/reports/.
      * @param $data
      * @return array
      * @throws Exception\ApiException
      */
     public static function reports($data)
     {
-        $api = new Api\Reports();
-        return $api->get($data);
+        return CompanyReports::get($data);
     }
 
 }
